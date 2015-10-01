@@ -14,7 +14,7 @@ from .cy_flexible_type cimport gl_options_map_from_pydict
 from .cy_flexible_type cimport flex_list_from_iterable
 
 from .cy_sframe import UnitySFrameProxy
-from .cy_sframe cimport create_proxy_wrapper_from_existing_proxy as sframe_proxy 
+from .cy_sframe cimport create_proxy_wrapper_from_existing_proxy as sframe_proxy
 
 from ..util import cloudpickle
 
