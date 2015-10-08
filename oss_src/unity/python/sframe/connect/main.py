@@ -55,7 +55,7 @@ def _verify_engine_binary(server_bin):
 def __catch_and_log__(func, *args, **kargs):
         try:
             return func(*args, **kargs)
-        except Exception, error:
+        except Exception as error:
             logging.getLogger(__name__).error(error)
 
 
