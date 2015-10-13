@@ -79,10 +79,13 @@ void init_python(const std::string& root_path) {
   }
 }
 
-void init_python(int argc, wchar_t** argv) {
+void init_python(int argc, char** argv) {
   Py_Initialize();
 
-  PySys_SetArgvEx(argc, argv, 0);
+  // XXX: Fix this!
+  wchar_t** argv2;
+
+  PySys_SetArgvEx(argc, argv2, 0);
 
   set_gl_sys_path();
 
