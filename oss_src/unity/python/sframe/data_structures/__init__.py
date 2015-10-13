@@ -21,7 +21,7 @@ of the BSD license. See the LICENSE file for details.
 __all__ = ['sframe', 'sarray', 'sgraph', 'sketch', 'image']
 
 from . import image
-import sframe
+from . import sframe
 from . import sarray
-import sgraph
-import sketch
+from . import sgraph
+from . import sketch

@@ -53,10 +53,10 @@ def _verify_engine_binary(server_bin):
 # Decorator which catch the exception and output to log error.
 @decorator.decorator
 def __catch_and_log__(func, *args, **kargs):
-        try:
-            return func(*args, **kargs)
-        except Exception as error:
-            logging.getLogger(__name__).error(error)
+        #try:
+        return func(*args, **kargs)
+        #except Exception as error:
+        #    logging.getLogger(__name__).error(error)
 
 
 @__catch_and_log__
@@ -119,12 +119,14 @@ def launch(server_addr=None, server_bin=None, server_log=None, auth_token=None,
         raise ValueError('Invalid server type: %s' % server_type)
 
     # start the server
-    try:
-        server.start()
+    #try:
+    server.start()
+    '''
     except Exception as e:
         __LOGGER__.error('Cannot start server: %s' % e)
         server.try_stop()
         return
+    '''
 
     # start the client
     (public_key, secret_key) = ('', '')

@@ -183,6 +183,7 @@ class LocalServer(GraphLabServer):
         max_retry = 5
         retry = 0
         server_alive = True
+        c = None
         while retry < max_retry:
             retry += 1
             # Make sure the server process is still alive
@@ -205,7 +206,8 @@ class LocalServer(GraphLabServer):
                     self.logger.error('Try connecting to server. Error: %s. Retry = %d' % (str(e), retry))
                     time.sleep(0.5)
                 finally:
-                    c.stop()
+                    if c:
+                        c.stop()
             # Server process terminated, raise exception and get the return code
             else:
                 retcode = self.proc.returncode

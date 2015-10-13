@@ -762,7 +762,7 @@ class SFrame(object):
     2  3   C
     """
 
-    __slots__ = ['shape', '__proxy__', '_proxy', '_cache']
+    __slots__ = ['_cache']
 
     def __init__(self, data=None,
                  format='auto',
