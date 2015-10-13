@@ -52,6 +52,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import operator
 import os
+import io
 import pickle
 import struct
 import sys
@@ -674,7 +675,7 @@ class CloudPickler(pickle.Pickler):
 
     #python2.6+ supports xrange pickling. some py2.5 extensions might as well.  We just test it
     try:
-        xrange(0).__reduce__()
+        range(0).__reduce__()
     except TypeError: #can't pickle -- use PiCloud pickler
         dispatch[xrange] = save_xrange
 
@@ -741,7 +742,7 @@ class CloudPickler(pickle.Pickler):
         self.save(retval)  #save stringIO
         self.memoize(obj)
 
-    dispatch[file] = save_file
+    dispatch[io.TextIOWrapper] = save_file
     """Special functions for Add-on libraries"""
 
     def inject_numpy(self):
@@ -968,7 +969,9 @@ def _make_skel_func(code, num_closures, base_globals = None):
                               None, None, dummy_closure)
 
 # this piece of opaque code is needed below to modify 'cell' contents
-cell_changer_code = new_code(
+cell_changer_code = None 
+''' XXXX:
+new_code(
     1, 1, 2, 0,
     ''.join([
         chr(dis.opmap['LOAD_FAST']), '\x00\x00',
@@ -978,6 +981,7 @@ cell_changer_code = new_code(
     ]),
     (), (), ('newval',), '<nowhere>', 'cell_changer', 1, '', ('c',), ()
 )
+'''
 
 def _change_cell_value(cell, newval):
     """ Changes the contents of 'cell' object to newval """
