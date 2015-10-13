@@ -971,7 +971,7 @@ def _make_skel_func(code, num_closures, base_globals = None):
 # this piece of opaque code is needed below to modify 'cell' contents
 cell_changer_code = None 
 ''' XXXX:
-new_code(
+cell_changer_code = new_code(
     1, 1, 2, 0,
     ''.join([
         chr(dis.opmap['LOAD_FAST']), '\x00\x00',

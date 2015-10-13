@@ -79,7 +79,7 @@ void init_python(const std::string& root_path) {
   }
 }
 
-void init_python(int argc, wchar_t** argv) {
+void init_python(int argc, char** argv) {
   Py_Initialize();
 
   // XXX: Fix this!
