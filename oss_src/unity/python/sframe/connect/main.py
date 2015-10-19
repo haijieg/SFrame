@@ -130,13 +130,14 @@ def launch(server_addr=None, server_bin=None, server_log=None, auth_token=None,
 
     # start the client
     (public_key, secret_key) = ('', '')
+    client = None
     if server_public_key != '':
        (public_key, secret_key) = get_public_secret_key_pair()
     try:
         num_tolerable_ping_failures = 4294967295
-        client = Client([], server.get_server_addr(), num_tolerable_ping_failures,
-                        public_key=public_key, secret_key=secret_key,
-                        server_public_key=server_public_key)
+        client = Client([], server.get_server_addr().encode(), num_tolerable_ping_failures,
+                        public_key=public_key.encode(), secret_key=secret_key.encode(),
+                        server_public_key=server_public_key.encode())
         if hasattr(server, 'proc') and hasattr(server.proc, 'pid'):
             client.set_server_alive_watch_pid(server.proc.pid)
         if(auth_token is not None):

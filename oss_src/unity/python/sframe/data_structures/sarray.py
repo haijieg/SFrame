@@ -27,6 +27,7 @@ from ..deps import numpy, HAS_NUMPY
 from ..deps import pandas, HAS_PANDAS
 
 import time
+import sys
 import array
 import collections
 import datetime
@@ -356,7 +357,8 @@ class SArray(object):
                     elif len(data.shape) > 2:
                         raise TypeError("Cannot convert Numpy arrays of greater than 2 dimensions")
 
-                elif (isinstance(data, str) or isinstance(data, unicode)):
+                elif (isinstance(data, str) or
+                      (sys.version_info.major < 3 and isinstance(data, unicode))):
                     # if it is a file, we default to string
                     dtype = str
                 elif isinstance(data, array.array):
@@ -595,7 +597,7 @@ class SArray(object):
             raise ValueError("Unsupported format: {}".format(format))
 
     def _escape_space(self,s):
-            return "".join([ch.encode('string_escape') if ch.isspace() else ch for ch in s])
+            return "".join([str(ch.encode('unicode_escape')) if ch.isspace() else ch for ch in s])
 
     def __repr__(self):
         """
@@ -607,7 +609,7 @@ class SArray(object):
             ret = ret + "Rows: " + str(self.size()) + "\n"
         else:
             ret = ret + "Rows: ?\n"
-        ret = ret + data_str
+        ret = ret + data_str.decode()
         return ret
 
     def __str__(self):
@@ -620,7 +622,11 @@ class SArray(object):
             headln = str(list(self.astype(str).head(100)))
         else:
             headln = self._escape_space(str(list(self.head(100))))
-            headln = unicode(headln.decode('string_escape'),'utf-8',errors='replace').encode('utf-8')
+            if sys.version_info.major < 3:
+                headln = unicode(headln.decode('string_escape'),'utf-8',errors='replace').encode('utf-8')
+            else:
+                print("dEBUG: %s" % headln)
+                headln = headln.encode().decode('unicode_escape').encode('utf-8')
         if (self.__proxy__.has_size() == False or self.size() > 100):
             # cut the last close bracket
             # and replace it with ...

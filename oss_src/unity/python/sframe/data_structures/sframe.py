@@ -99,6 +99,9 @@ for name in SPARK_SUPPORT_NAMES.keys():
 if not all(name in BINARY_PATHS for name in SPARK_SUPPORT_NAMES.keys()):
     RDD_SUPPORT = False
 
+if sys.version_info.major > 2:
+    long = int
+
 def get_spark_integration_jar_path():
     """
     The absolute path of the jar file required to enable GraphLab Create's
@@ -762,7 +765,7 @@ class SFrame(object):
     2  3   C
     """
 
-    __slots__ = ['_cache']
+    __slots__ = ['_proxy', '_cache']
 
     def __init__(self, data=None,
                  format='auto',
@@ -781,7 +784,8 @@ class SFrame(object):
                 if (HAS_PANDAS and isinstance(data, pandas.DataFrame)):
                     _format = 'dataframe'
                     tracker.track('sframe.location.memory', value=1)
-                elif (isinstance(data, str) or isinstance(data, unicode)):
+                elif (isinstance(data, str) or
+                      (sys.version_info.major < 3 and isinstance(data, unicode))):
 
                     if data.find('://') == -1:
                         suffix = 'local'
@@ -838,7 +842,7 @@ class SFrame(object):
                         elif SArray in unique_types:
                             raise ValueError("Cannot create SFrame from mix of regular values and SArrays")
                         else:
-                            self.__proxy__.add_column(SArray(data).__proxy__, "")
+                            self.__proxy__.add_column(SArray(data).__proxy__, "".encode())
                 elif (_format == 'dict'):
                     # Validate that every column is the same length.
                     if len(set(len(value) for value in data.values())) > 1:
@@ -2071,7 +2075,7 @@ class SFrame(object):
         ret = "Columns:\n"
         if len(colnames) > 0:
             for i in range(len(colnames)):
-                ret = ret + "\t" + colnames[i] + "\t" + coltypes[i].__name__ + "\n"
+                ret = ret + "\t" + colnames[i].decode('utf-8') + "\t" + coltypes[i].__name__ + "\n"
             ret = ret + "\n"
         else:
             ret = ret + "\tNone\n\n"
@@ -3141,7 +3145,7 @@ class SFrame(object):
         if not isinstance(key, str):
             raise TypeError("Invalid key type: must be str")
         with cython_context():
-            return SArray(data=[], _proxy=self.__proxy__.select_column(key))
+            return SArray(data=[], _proxy=self.__proxy__.select_column(key.encode()))
 
     def select_columns(self, keylist):
         """
@@ -3187,8 +3191,11 @@ class SFrame(object):
         """
         if not hasattr(keylist, '__iter__'):
             raise TypeError("keylist must be an iterable")
-        if not (all([isinstance(x, str) or isinstance(x, type) for x in keylist])):
-            raise TypeError("Invalid key type: must be str or type")
+        if not (all([isinstance(x, str) or isinstance(x, type) or isinstance(x, bytes)
+                     for x in keylist])):
+            for x in keylist:
+                print("DEBUG: %s" % types(x))
+            raise TypeError("Invalid key type: must be str, bytes or type")
 
         column_names_set = set(self.column_names())
         # quick validation to make sure all selected string columns exist
@@ -3270,7 +3277,8 @@ class SFrame(object):
         if not isinstance(name, str):
             raise TypeError("Invalid column name: must be str")
         with cython_context():
-            self.__proxy__.add_column(data.__proxy__, name)
+            print("Type: %s" % type(name))
+            self.__proxy__.add_column(data.__proxy__, str.encode(name))
         self._cache = None
         return self
 
@@ -3555,7 +3563,7 @@ class SFrame(object):
             try:
                 lb, ub, value_list = self._cache["getitem_cache"]
                 if lb <= key < ub:
-                    return value_list[key - lb]
+                    return value_list[int(key - lb)]
 
             except KeyError:
                 pass
@@ -3579,7 +3587,7 @@ class SFrame(object):
 
             val_list = list(SFrame(_proxy = self.__proxy__.copy_range(lb, 1, ub)))
             self._cache["getitem_cache"] = (lb, ub, val_list)
-            return val_list[key - lb]
+            return val_list[int(key - lb)]
 
         elif type(key) is slice:
             start = key.start
