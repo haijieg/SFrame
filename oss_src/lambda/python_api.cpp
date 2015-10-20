@@ -82,10 +82,14 @@ void init_python(const std::string& root_path) {
 void init_python(int argc, char** argv) {
   Py_Initialize();
 
+#if PY_MAJOR_VERSION < 3
+  PySys_SetArgvEx(argc, argv, 0);
+#else
   // XXX: Fix this!
   wchar_t** argv2;
 
   PySys_SetArgvEx(argc, argv2, 0);
+#endif
 
   set_gl_sys_path();
 

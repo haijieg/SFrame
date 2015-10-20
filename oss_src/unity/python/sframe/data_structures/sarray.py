@@ -36,6 +36,9 @@ import numbers
 
 __all__ = ['SArray']
 
+if sys.version_info.major > 2:
+    long = int
+
 def _create_sequential_sarray(size, start=0, reverse=False):
     if type(size) is not int:
         raise TypeError("size must be int")
@@ -596,9 +599,6 @@ class SArray(object):
         else:
             raise ValueError("Unsupported format: {}".format(format))
 
-    def _escape_space(self,s):
-            return "".join([str(ch.encode('unicode_escape')) if ch.isspace() else ch for ch in s])
-
     def __repr__(self):
         """
         Returns a string description of the SArray.
@@ -621,11 +621,10 @@ class SArray(object):
         if self.dtype() == _Image:
             headln = str(list(self.astype(str).head(100)))
         else:
-            headln = self._escape_space(str(list(self.head(100))))
+            headln = str(list(self.head(100)))
             if sys.version_info.major < 3:
                 headln = unicode(headln.decode('string_escape'),'utf-8',errors='replace').encode('utf-8')
             else:
-                print("dEBUG: %s" % headln)
                 headln = headln.encode().decode('unicode_escape').encode('utf-8')
         if (self.__proxy__.has_size() == False or self.size() > 100):
             # cut the last close bracket
