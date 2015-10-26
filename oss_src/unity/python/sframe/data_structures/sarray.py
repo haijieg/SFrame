@@ -376,7 +376,10 @@ class SArray(object):
             if HAS_PANDAS and isinstance(data, pandas.Series):
                 with cython_context():
                     self.__proxy__.load_from_iterable(data.values, dtype, ignore_cast_failure)
-            elif (isinstance(data, str) or isinstance(data, unicode)):
+            elif (HAS_NUMPY and isinstance(data, numpy.ndarray)) or (hasattr(data, '__iter__') and not isinstance(data, dict)):
+                with cython_context():
+                    self.__proxy__.load_from_iterable(data, dtype, ignore_cast_failure)
+            elif (isinstance(data, str) or (sys.version_info.major <= 2 and isinstance(data, unicode))):
                 internal_url = _make_internal_url(data)
                 with cython_context():
                     self.__proxy__.load_autodetect(internal_url, dtype)
@@ -387,6 +390,7 @@ class SArray(object):
                 with cython_context():
                     self.__proxy__.load_from_iterable(data, dtype, ignore_cast_failure)
             else:
+                print("Debug %s" % type(data))
                 raise TypeError("Unexpected data source. " \
                                 "Possible data source types are: list, " \
                                 "numpy.ndarray, pandas.Series, and string(url)")

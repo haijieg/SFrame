@@ -213,12 +213,11 @@ if [[ $run_toolchain_install == 1 ]]; then
                         if [[ $no_cuda == 1 ]]; then
                           toolchain="http://s3-us-west-2.amazonaws.com/dato-deps/$DEFAULT_DATO_DEPS_VERSION/dato_deps_linux_no_cuda.tar.gz"
                         else
-                          toolchain="http://s3-us-west-2.amazonaws.com/dato-deps/$DEFAULT_DATO_DEPS_VERSION/dato_deps_linux_default.tar.gz"
+                          #toolchain="http://s3-us-west-2.amazonaws.com/dato-deps/$DEFAULT_DATO_DEPS_VERSION/dato_deps_linux_default.tar.gz"
+                          toolchain="http://s3-us-west-2.amazonaws.com/dato-deps/$DEFAULT_DATO_DEPS_VERSION/dato_deps_linux_gcc_4.9.2.python_3.4m.tar.gz"
                         fi
                 elif [[ $OSTYPE == msys ]]; then
-                        # XXX: fix!
-                        toolchain="/home/toby/dev/dato-deps/dato_deps_linux_gcc_4.9.2.tar.gz"
-                        #"http://s3-us-west-2.amazonaws.com/dato-deps/$DEFAULT_DATO_DEPS_VERSION/dato_deps_win_default.tar.gz"
+                        toolchain="http://s3-us-west-2.amazonaws.com/dato-deps/$DEFAULT_DATO_DEPS_VERSION/dato_deps_win_default.tar.gz"
                 else 
                         echo "Unknown toolchain for the operating system"
                         exit 1

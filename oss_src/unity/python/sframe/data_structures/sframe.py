@@ -38,6 +38,7 @@ import uuid
 import platform
 import numbers
 import sys
+import six
 import csv
 
 __all__ = ['SFrame']
@@ -809,7 +810,7 @@ class SFrame(object):
                 elif isinstance(data, SFrame):
                     _format = 'sframe_obj'
 
-                elif (hasattr(data, 'iteritems')):
+                elif isinstance(data, dict):
                     _format = 'dict'
                     tracker.track('sframe.location.memory', value=1)
 
@@ -851,8 +852,8 @@ class SFrame(object):
                         raise RuntimeError("All column should be of the same length")
                     # split into SArray values and other iterable values.
                     # We convert the iterable values in bulk, and then add the sarray values as columns
-                    sarray_keys = sorted(key for key,value in data.iteritems() if isinstance(value, SArray))
-                    self.__proxy__.load_from_dataframe({key:value for key,value in data.iteritems() if not isinstance(value, SArray)})
+                    sarray_keys = sorted(key for key,value in six.iteritems(data) if isinstance(value, SArray))
+                    self.__proxy__.load_from_dataframe({key:value for key,value in six.iteritems(data) if not isinstance(value, SArray)})
                     for key in sarray_keys:
                         self.__proxy__.add_column(data[key].__proxy__, key)
                 elif (_format == 'csv'):
@@ -2075,7 +2076,7 @@ class SFrame(object):
         ret = "Columns:\n"
         if len(colnames) > 0:
             for i in range(len(colnames)):
-                ret = ret + "\t" + colnames[i].decode('utf-8') + "\t" + coltypes[i].__name__ + "\n"
+                ret = ret + "\t" + colnames[i] + "\t" + coltypes[i].__name__ + "\n"
             ret = ret + "\n"
         else:
             ret = ret + "\tNone\n\n"
@@ -2132,7 +2133,10 @@ class SFrame(object):
             if (len(s) <= max_length):
                 return s
             else:
-                u = unicode(s, 'utf-8', errors='replace')
+                if sys.version_info.major < 3:
+                    u = unicode(s, 'utf-8', errors='replace')
+                else:
+                    u = s
                 return u[:max_length].encode('utf-8')
 
         def _truncate_str(s, wrap_str=False):
@@ -2143,7 +2147,10 @@ class SFrame(object):
             s = _escape_space(s)
 
             if len(s) <= max_column_width:
-                return unicode(s, 'utf-8', errors='replace')
+                if sys.version_info.major < 3:
+                    return unicode(s, 'utf-8', errors='replace')
+                else:
+                    return s
             else:
                 ret = ''
                 # if wrap_str is true, wrap the text and take at most 2 rows
@@ -2157,7 +2164,11 @@ class SFrame(object):
                     ret = wrapped_lines[0] + '\n' + last_line + ' ...'
                 else:
                     ret = _truncate_respect_unicode(s, max_column_width - 4) + '...'
-                return unicode(ret, 'utf-8', errors='replace')
+
+                if sys.version_info.major < 3:
+                    return unicode(ret, 'utf-8', errors='replace')
+                else:
+                    return ret
 
         columns = self.column_names()[:max_columns]
         columns.reverse()  # reverse the order of columns and we will pop from the end
@@ -2257,7 +2268,7 @@ class SFrame(object):
 
     def __str_impl__(self, num_rows=10, footer=True):
         """
-        Returns a string containing the first 10 elements of the frame, along
+        Returns a string containing the first num_rows elements of the frame, along
         with a description of the frame.
         """
         MAX_ROWS_TO_DISPLAY = num_rows
@@ -3226,6 +3237,7 @@ class SFrame(object):
             if i[1] in typelist and i[0] not in selected_columns:
                 selected_columns += [i[0]]
 
+        selected_columns[0] = selected_columns[0].encode()
 
         with cython_context():
             return SFrame(data=[], _proxy=self.__proxy__.select_columns(selected_columns))
