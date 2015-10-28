@@ -8,8 +8,8 @@ of the BSD license. See the LICENSE file for details.
 from . import util as _util, toolkits as _toolkits, SFrame as _SFrame, SArray as _SArray, \
     SGraph as _SGraph, load_graph as _load_graph
 
-from .util import _get_aws_credentials as _util_get_aws_credentials
-from .util import cloudpickle as _cloudpickle
+from .util import _get_aws_credentials as _util_get_aws_credentials, \
+    cloudpickle as _cloudpickle, file_util as _file_util
 
 import pickle as _pickle
 import uuid as _uuid

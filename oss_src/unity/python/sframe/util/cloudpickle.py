@@ -796,7 +796,8 @@ class CloudPickler(pickle.Pickler):
         email = sys.modules.get('email')
         if not email:
             return
-        self.dispatch[email.LazyImporter] = self.__class__.save_unsupported
+        if hasattr(email, 'LazyImporter'):
+            self.dispatch[email.LazyImporter] = self.__class__.save_unsupported
 
     def inject_unity_proxy(self):
         # get the top level module

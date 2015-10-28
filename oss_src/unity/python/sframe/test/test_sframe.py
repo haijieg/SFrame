@@ -1375,7 +1375,7 @@ class SFrameTest(unittest.TestCase):
         sf['d'] = [1.0,2.0,1.0,2.0,      3.0,3.0,1.0,    4.0,   None, 2.0,  None]
         sf['e'] = [{'x': 1}] * len(sf['a'])
 
-        print sf['b'].dtype()
+        print(sf['b'].dtype())
 
         result = sf.groupby('a', aggregate.CONCAT('b'))
         expected_result = SFrame({

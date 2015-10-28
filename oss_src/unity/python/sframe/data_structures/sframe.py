@@ -3204,8 +3204,6 @@ class SFrame(object):
             raise TypeError("keylist must be an iterable")
         if not (all([isinstance(x, str) or isinstance(x, type) or isinstance(x, bytes)
                      for x in keylist])):
-            for x in keylist:
-                print("DEBUG: %s" % types(x))
             raise TypeError("Invalid key type: must be str, bytes or type")
 
         column_names_set = set(self.column_names())
@@ -3237,7 +3235,7 @@ class SFrame(object):
             if i[1] in typelist and i[0] not in selected_columns:
                 selected_columns += [i[0]]
 
-        selected_columns[0] = selected_columns[0].encode()
+        selected_columns = [s.encode() for s in selected_columns]
 
         with cython_context():
             return SFrame(data=[], _proxy=self.__proxy__.select_columns(selected_columns))
@@ -3289,7 +3287,6 @@ class SFrame(object):
         if not isinstance(name, str):
             raise TypeError("Invalid column name: must be str")
         with cython_context():
-            print("Type: %s" % type(name))
             self.__proxy__.add_column(data.__proxy__, str.encode(name))
         self._cache = None
         return self
