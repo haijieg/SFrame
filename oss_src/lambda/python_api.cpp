@@ -77,24 +77,6 @@ void init_python(const std::string& root_path) {
     logstream(LOG_ERROR) << "Unknown error setting sys.path from __GL_SYS_PATH__." << std::endl; 
     throw std::current_exception();
   }
-}
-
-void init_python(int argc, char** argv) {
-  Py_Initialize();
-
-#if PY_MAJOR_VERSION < 3
-  PySys_SetArgvEx(argc, argv, 0);
-#else
-  // XXX: Fix this!
-  wchar_t** argv2;
-
-  PySys_SetArgvEx(argc, argv2, 0);
-#endif
-
-  set_gl_sys_path();
-
-  PyEval_InitThreads();
-  PyEval_SaveThread(); // release the GIL
 
   logstream(LOG_INFO) << "Path information set." << std::endl;
   

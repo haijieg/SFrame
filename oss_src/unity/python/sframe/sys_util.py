@@ -11,7 +11,7 @@ import logging
 from distutils.util import get_platform as _get_platform
 import glob as _glob
 import subprocess as _subprocess
-import _pylambda_worker
+from . import _pylambda_worker
 
 def make_unity_server_env():
     """
@@ -91,7 +91,7 @@ def test_pylambda_worker():
 
     import subprocess
 
-    print "\nLaunch pylambda_worker process with simulated unity_server environment."
+    print("\nLaunch pylambda_worker process with simulated unity_server environment.")
 
     proc = subprocess.Popen(
         [sys.executable, os.path.abspath(_pylambda_worker.__file__)],
