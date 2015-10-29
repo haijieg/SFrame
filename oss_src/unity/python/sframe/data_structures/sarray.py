@@ -2995,9 +2995,9 @@ class SArray(object):
         with cython_context():
             if (self.dtype() == dict and column_types == None):
                 limit = limit if limit != None else []
-                return _SFrame(_proxy=self.__proxy__.unpack_dict(column_name_prefix, limit, na_value))
+                return _SFrame(_proxy=self.__proxy__.unpack_dict(column_name_prefix.encode(), limit, na_value))
             else:
-                return _SFrame(_proxy=self.__proxy__.unpack(column_name_prefix, limit, column_types, na_value))
+                return _SFrame(_proxy=self.__proxy__.unpack(column_name_prefix.encode(), limit, column_types, na_value))
 
     def sort(self, ascending=True):
         """

@@ -3525,7 +3525,7 @@ class SFrame(object):
         with cython_context():
             for k in names:
                 colid = self.column_names().index(k)
-                self.__proxy__.set_column_name(colid, names[k])
+                self.__proxy__.set_column_name(colid, names[k].encode())
         self._cache = None
         return self
 
@@ -4193,8 +4193,10 @@ class SFrame(object):
             _mt._get_metric_tracker().track('sframe.groupby', properties={'operator':op})
 
         with cython_context():
-            return SFrame(_proxy=self.__proxy__.groupby_aggregate(key_columns_array, group_columns,
-                                                                  group_output_columns, group_ops))
+            return SFrame(_proxy=self.__proxy__.groupby_aggregate([i.encode() for i in key_columns_array],
+                                                                  [[j.encode() for j in i] for i in group_columns],
+                                                                  [i.encode() for i in group_output_columns],
+                                                                  [i.encode() for i in group_ops]))
 
     def join(self, right, on=None, how='inner'):
         """
@@ -5154,7 +5156,9 @@ class SFrame(object):
         _mt._get_metric_tracker().track('sframe.stack')
 
         with cython_context():
-            return SFrame(_proxy=self.__proxy__.stack(column_name, new_column_name, new_column_type, drop_na))
+            return SFrame(_proxy=self.__proxy__.stack(column_name.encode(), 
+                                                      [i.encode() for i in new_column_name],
+                                                      new_column_type, drop_na))
 
     def unstack(self, column, new_column_name=None):
         """
@@ -5433,7 +5437,7 @@ class SFrame(object):
         _mt._get_metric_tracker().track('sframe.sort')
 
         with cython_context():
-            return SFrame(_proxy=self.__proxy__.sort(sort_column_names, sort_column_orders))
+            return SFrame(_proxy=self.__proxy__.sort([i.encode() for i in sort_column_names], sort_column_orders))
 
     def dropna(self, columns=None, how='any'):
         """
