@@ -1490,7 +1490,15 @@ cdef dict pydict_from_gl_options_map(const gl_options_map& m):
     cdef options_map_iter it = <options_map_iter>m.begin()
 
     while it != <options_map_iter>m.end():
-        ret[deref(it).first] = pyobject_from_flexible_type(deref(it).second)
+        key = deref(it).first
+
+        if(type(key) == types.StringType):
+            key = key.decode()
+        value = pyobject_from_flexible_type(deref(it).second)
+        if(type(value) == types.StringType):
+            value = value.decode()
+
+        ret[key] = value
         inc(it)
 
     return ret

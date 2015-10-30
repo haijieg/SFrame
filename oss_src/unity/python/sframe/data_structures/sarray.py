@@ -16,6 +16,7 @@ of the BSD license. See the LICENSE file for details.
 
 from .. import connect as _mt
 from ..connect import main as glconnect
+from ..cython import _encode
 from ..cython.cy_flexible_type import pytype_from_dtype, pytype_from_array_typecode
 from ..cython.cy_flexible_type import infer_type_of_list, infer_type_of_sequence
 from ..cython.cy_sarray import UnitySArrayProxy
@@ -378,7 +379,7 @@ class SArray(object):
                     self.__proxy__.load_from_iterable(data.values, dtype, ignore_cast_failure)
             elif (HAS_NUMPY and isinstance(data, numpy.ndarray)) or (hasattr(data, '__iter__') and not isinstance(data, dict)):
                 with cython_context():
-                    self.__proxy__.load_from_iterable(data, dtype, ignore_cast_failure)
+                    self.__proxy__.load_from_iterable(_encode(data), dtype, ignore_cast_failure)
             elif (isinstance(data, str) or (sys.version_info.major <= 2 and isinstance(data, unicode))):
                 internal_url = _make_internal_url(data)
                 with cython_context():
@@ -595,7 +596,7 @@ class SArray(object):
                 format = 'binary'
         if format == 'binary':
             with cython_context():
-                self.__proxy__.save(_make_internal_url(filename))
+                self.__proxy__.save(_encode(_make_internal_url(filename)))
         elif format == 'text' or format == 'csv':
             sf = _SFrame({'X1':self})
             with cython_context():
@@ -709,7 +710,7 @@ class SArray(object):
         Rows: 3
         [1, 0, 0]
         """
-        return SArray(_proxy = self.__proxy__.left_scalar_operator(item, 'in'))
+        return SArray(_proxy = self.__proxy__.left_scalar_operator(item, _encode('in')))
 
     def __add__(self, other):
         """
@@ -961,7 +962,7 @@ class SArray(object):
             if type(other) is SArray:
                 return SArray(_proxy = self.__proxy__.vector_operator(other.__proxy__, '=='))
             else:
-                return SArray(_proxy = self.__proxy__.left_scalar_operator(other, '=='))
+                return SArray(_proxy = self.__proxy__.left_scalar_operator(other, _encode('==')))
 
 
     def __ne__(self, other):

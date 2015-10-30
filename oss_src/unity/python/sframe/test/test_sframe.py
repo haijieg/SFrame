@@ -13,7 +13,7 @@ from ..connect import main as glconnect
 from ..connect import server
 from ..util import _assert_sframe_equal
 from .. import _launch, load_sframe, aggregate
-from .. import util
+from . import util
 
 import pandas as pd
 from ..util.timezone import GMT
@@ -1448,12 +1448,13 @@ class SFrameTest(unittest.TestCase):
     def test_unique(self):
         sf = SFrame({'a':[1,1,2,2,3,3,4,4,5,5],'b':[1,2,3,4,5,6,7,8,9,10]})
         self.assertEqual(len(sf.unique()), 10)
+
         vals = [1,1,2,2,3,3,4,4, None, None]
         sf = SFrame({'a':vals,'b':vals})
         res = sf.unique()
         self.assertEqual(len(res), 5)
-        self.assertEqual(sorted(list(res['a'])), sorted([1,2,3,4,None]))
-        self.assertEqual(sorted(list(res['b'])), sorted([1,2,3,4,None]))
+        self.assertEqual(set(res['a']), set([1,2,3,4,None]))
+        self.assertEqual(set(res['b']), set([1,2,3,4,None]))
 
     def test_append_empty(self):
         sf_with_data = SFrame(data=self.dataframe)

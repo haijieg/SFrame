@@ -1,4 +1,3 @@
-
 """
 This module defines the SFrame class which provides the
 ability to create, access and manipulate a remote scalable dataframe object.
@@ -16,6 +15,7 @@ of the BSD license. See the LICENSE file for details.
 '''
 from .. import connect as _mt
 from ..connect import main as glconnect
+from ..cython import _encode
 from ..cython.cy_flexible_type import infer_type_of_list
 from ..cython.context import debug_trace as cython_context
 from ..cython.cy_sframe import UnitySFrameProxy
@@ -843,7 +843,7 @@ class SFrame(object):
                         elif SArray in unique_types:
                             raise ValueError("Cannot create SFrame from mix of regular values and SArrays")
                         else:
-                            self.__proxy__.add_column(SArray(data).__proxy__, "".encode())
+                            self.__proxy__.add_column(SArray(data).__proxy__, _encode(''))
                 elif (_format == 'dict'):
                     # Validate that every column is the same length.
                     if len(set(len(value) for value in data.values())) > 1:
@@ -855,7 +855,7 @@ class SFrame(object):
                     sarray_keys = sorted(key for key,value in six.iteritems(data) if isinstance(value, SArray))
                     self.__proxy__.load_from_dataframe({key:value for key,value in six.iteritems(data) if not isinstance(value, SArray)})
                     for key in sarray_keys:
-                        self.__proxy__.add_column(data[key].__proxy__, key)
+                        self.__proxy__.add_column(data[key].__proxy__, _encode(key))
                 elif (_format == 'csv'):
                     url = data
                     tmpsf = SFrame.read_csv(url, delimiter=',', header=True)
@@ -866,7 +866,7 @@ class SFrame(object):
                     self.__proxy__ = tmpsf.__proxy__
                 elif (_format == 'sframe'):
                     url = _make_internal_url(data)
-                    self.__proxy__.load_from_sframe_index(url)
+                    self.__proxy__.load_from_sframe_index(_encode(url))
                 elif (_format == 'empty'):
                     pass
                 else:
@@ -2914,7 +2914,7 @@ class SFrame(object):
 
         with cython_context():
             if format is 'binary':
-                self.__proxy__.save(url)
+                self.__proxy__.save(_encode(url))
             elif format is 'csv':
                 assert filename.endswith(('.csv', '.csv.gz'))
                 self.__proxy__.save_as_csv(url, {})
@@ -3156,7 +3156,7 @@ class SFrame(object):
         if not isinstance(key, str):
             raise TypeError("Invalid key type: must be str")
         with cython_context():
-            return SArray(data=[], _proxy=self.__proxy__.select_column(key.encode()))
+            return SArray(data=[], _proxy=self.__proxy__.select_column(_encode(key)))
 
     def select_columns(self, keylist):
         """
@@ -3235,7 +3235,7 @@ class SFrame(object):
             if i[1] in typelist and i[0] not in selected_columns:
                 selected_columns += [i[0]]
 
-        selected_columns = [s.encode() for s in selected_columns]
+        selected_columns = _encode(selected_columns)
 
         with cython_context():
             return SFrame(data=[], _proxy=self.__proxy__.select_columns(selected_columns))
@@ -4193,10 +4193,10 @@ class SFrame(object):
             _mt._get_metric_tracker().track('sframe.groupby', properties={'operator':op})
 
         with cython_context():
-            return SFrame(_proxy=self.__proxy__.groupby_aggregate([i.encode() for i in key_columns_array],
-                                                                  [[j.encode() for j in i] for i in group_columns],
-                                                                  [i.encode() for i in group_output_columns],
-                                                                  [i.encode() for i in group_ops]))
+            return SFrame(_proxy=self.__proxy__.groupby_aggregate(_encode(key_columns_array),
+                                                                  _encode(group_columns),
+                                                                  _encode(group_output_columns),
+                                                                  _encode(group_ops)))
 
     def join(self, right, on=None, how='inner'):
         """
@@ -5156,8 +5156,8 @@ class SFrame(object):
         _mt._get_metric_tracker().track('sframe.stack')
 
         with cython_context():
-            return SFrame(_proxy=self.__proxy__.stack(column_name.encode(), 
-                                                      [i.encode() for i in new_column_name],
+            return SFrame(_proxy=self.__proxy__.stack(_encode(column_name), 
+                                                      _encode(new_column_name),
                                                       new_column_type, drop_na))
 
     def unstack(self, column, new_column_name=None):

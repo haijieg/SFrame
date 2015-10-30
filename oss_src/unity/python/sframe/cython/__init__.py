@@ -11,9 +11,8 @@ def _encode(obj):
     Recursively encodes all strings in the objects. Supports the following types:
     anything that evaluates to False, String, 
     '''
-    if not obj:
-        return obj
     if isinstance(obj, str):
         return obj.encode()
     if isinstance(obj, list):
         return [ _encode(i) for i in obj]
+    return obj
