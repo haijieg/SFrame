@@ -75,7 +75,8 @@ if [[ $haspython == 0 ]]; then
         else
                 if [ ! -e miniconda.sh ]; then
                         # XXX: support python 2
-                        download_file http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh miniconda.sh
+                        download_file http://repo.continuum.io/miniconda/Miniconda3-3.16.0-Linux-x86_64.sh miniconda.sh
+                        #Miniconda3-latest-Linux-x86_64.sh miniconda.sh
                 fi
                 bash ./miniconda.sh -p $PWD/deps/conda -b
         fi
@@ -97,4 +98,4 @@ if [ $OSTYPE == "msys" ]; then
 else
   cp deps/conda/lib/libpython* deps/local/lib
 fi
-cp -R deps/conda/include/python3.4m deps/local/include
+cp -R deps/conda/include/python3.4m/* deps/local/include
