@@ -56,7 +56,9 @@ logging.config.dictConfig({
             'format': '%(asctime)s [%(levelname)s] %(name)s, %(lineno)s: %(message)s'
         },
         'brief': {
-            'format': '[%(levelname)s] %(message)s'
+            # XXX: temp!
+            'format': '%(asctime)s [%(levelname)s] %(name)s, %(lineno)s: %(message)s'
+            #'format': '[%(levelname)s] %(message)s'
         }
     },
     'handlers': {

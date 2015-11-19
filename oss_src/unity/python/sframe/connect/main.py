@@ -53,10 +53,10 @@ def _verify_engine_binary(server_bin):
 # Decorator which catch the exception and output to log error.
 @decorator.decorator
 def __catch_and_log__(func, *args, **kargs):
-        try:
-            return func(*args, **kargs)
-        except Exception as error:
-            logging.getLogger(__name__).error(error)
+    try:
+        return func(*args, **kargs)
+    except Exception as error:
+        logging.getLogger(__name__).error(error)
 
 
 @__catch_and_log__

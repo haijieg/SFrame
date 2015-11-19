@@ -315,7 +315,7 @@ class SArrayTest(unittest.TestCase):
     def test_transform_dict(self):
         # lambda accesses dict
         sa_dict = SArray([{'a':1}, {1:2}, {'c': 'a'}, None], dict)
-        sa_bool_r = sa_dict.apply(lambda x: x.has_key('a') if x != None else None, skip_undefined=False)
+        sa_bool_r = sa_dict.apply(lambda x: 'a' in x if x != None else None, skip_undefined=False)
         expected_output = [1, 0, 0, None]
         self.__test_equal(sa_bool_r, expected_output, int)
 
@@ -329,13 +329,13 @@ class SArrayTest(unittest.TestCase):
         data = [{'a':1}, {1:2}, None, {'c': 'a'}]
         expected_output = [{'a':1}]
         sa_dict = SArray(expected_output, dict)
-        ret = sa_dict.filter(lambda x: x.has_key('a'))
+        ret = sa_dict.filter(lambda x: 'a' in x)
         self.__test_equal(ret, expected_output, dict)
 
         # try second time to make sure the lambda system still works
         expected_output = [{1:2}]
         sa_dict = SArray(expected_output, dict)
-        lambda_out = sa_dict.filter(lambda x: x.has_key(1))
+        lambda_out = sa_dict.filter(lambda x: 1 in x)
         self.__test_equal(lambda_out, expected_output, dict)
 
     def test_filter(self):

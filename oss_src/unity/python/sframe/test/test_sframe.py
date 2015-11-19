@@ -87,7 +87,7 @@ class SFrameTest(unittest.TestCase):
                 if type(v1) == dict:
                     self.assertEquals(len(v1), len(v2))
                     for key in v1:
-                        self.assertTrue(v1.has_key(key))
+                        self.assertTrue(key in v1)
                         self.assertEqual(v1[key], v2[key])
 
                 elif (hasattr(v1, "__iter__")):

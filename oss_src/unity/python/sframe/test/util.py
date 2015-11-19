@@ -43,7 +43,7 @@ class SFrameComparer():
                 if type(v1) == dict:
                     assert len(v1) == len(v2)
                     for key in v1:
-                        assert v1.has_key(key)
+                        assert key in v1
                         assert v1[key] == v2[key]
 
                 elif (hasattr(v1, "__iter__")):

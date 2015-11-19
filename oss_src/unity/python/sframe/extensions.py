@@ -354,6 +354,7 @@ def _publish():
     # graphlab.extensions.somemodule.somefunction
     for fn in fnlist:
         props = unity.describe_toolkit_function(fn)
+        fn = fn.decode()
         # quit if there is nothing we can process
         if 'arguments' not in props:
             continue
