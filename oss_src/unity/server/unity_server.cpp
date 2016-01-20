@@ -22,7 +22,6 @@
 #include <unity/lib/toolkit_class_registry.hpp>
 #include <unity/lib/toolkit_function_registry.hpp>
 #include <startup_teardown/startup_teardown.hpp>
-
 #include <lambda/lambda_master.hpp>
 
 #include "unity_server.hpp"
@@ -92,7 +91,9 @@ void unity_server::stop() {
   delete server;
   server = nullptr;
   global_logger().add_observer(LOG_PROGRESS, NULL);
+  std::cout << "Begin performing teardown" << std::endl;
   graphlab::global_teardown::get_instance().perform_teardown();
+  std::cout << "End performing teardown" << std::endl;
 }
 
 /**

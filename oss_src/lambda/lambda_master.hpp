@@ -75,6 +75,14 @@ namespace lambda {
 
     static lambda_master& get_instance();
 
+    static void destroy_instance();
+
+    /**
+     * Constructor. Do not use directly. Use get_instance() instead.
+     */
+    lambda_master(size_t nworkers);
+
+
     /**
      * Register the lambda_str for all workers, and returns the id for the lambda.
      * Throws the exception  
@@ -144,9 +152,6 @@ namespace lambda {
     };
     
    private:
-
-    lambda_master(size_t nworkers);
-
     lambda_master(lambda_master const&) = delete;
 
     lambda_master& operator=(lambda_master const&) = delete;

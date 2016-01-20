@@ -28,6 +28,8 @@
 #include <parallel/thread_pool.hpp>
 #include <logger/logger.hpp>
 #include <logger/log_rotate.hpp>
+#include <lambda/lambda_master.hpp>
+#include <lambda/graph_pylambda_master.hpp>
 #include <minipsutil/minipsutil.h>
 
 #include "startup_teardown.hpp"
@@ -262,11 +264,17 @@ global_startup& global_startup::get_instance() {
 /**************************************************************************/
 
 void global_teardown::perform_teardown() {
+  logstream(LOG_INFO) << "Performing teardown" << std::endl;
+  std::cout << "Performing teardown" << std::endl;
   if (teardown_performed) return;
   teardown_performed = true;
   try {
     MEMORY_RELEASE_THREAD->stop();
     delete MEMORY_RELEASE_THREAD;
+    logstream(LOG_INFO) << "Release lambda workers" << std::endl;
+    std::cout << "Release lambda workers" << std::endl;
+    graphlab::lambda::lambda_master::destroy_instance();
+    graphlab::lambda::graph_pylambda_master::destroy_instance();
     graphlab::fileio::fixed_size_cache_manager::get_instance().clear();
     graphlab::file_download_cache::get_instance().clear();
     graphlab::block_cache::release_instance();

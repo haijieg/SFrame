@@ -6,14 +6,15 @@ from os.path import split, abspath, join
 from glob import glob
 
 
-def set_windows_dll_path():
+def add_windows_dll_path():
     """
     Sets the dll load path so that things are resolved correctly.
     """
 
     # Back up to the directory, then to the base directory as this is
     # in ./_scripts.
-    lib_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    lib_path = os.path.dirname(os.path.abspath(__file__))
+    lib_path = os.path.abspath(os.path.join(lib_path, os.pardir))
 
     def errcheck_bool(result, func, args):
         if not result:
@@ -34,6 +35,7 @@ def set_windows_dll_path():
         kernel32.SetDllDirectoryW.errcheck = errcheck_bool
         kernel32.SetDllDirectoryW.argtypes = (wintypes.LPCWSTR,)
         kernel32.SetDllDirectoryW(lib_path)
+        print "Add lib_path: ", lib_path
     except Exception, e:
         sys.stderr.write("Error setting DLL load orders: %s (things may still work).\n" % str(e))
         sys.stderr.flush()
@@ -111,7 +113,7 @@ def main():
 
     # Set the dll load path if we are on windows
     if sys.platform == 'win32':
-        set_windows_dll_path()
+        add_windows_dll_path()
 
     try:
         pylambda_lib = PyDLL(pylambda_workers[0])
