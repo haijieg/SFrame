@@ -86,6 +86,10 @@ void cache_new_handler() {
     auto fout = std::make_shared<fileio_impl::general_fstream_sink>(filename);
     if (data) fout->write(data, size);
     release_memory();
+    
+    if (!fout->good()) {
+      log_and_throw_io_failure("Fail to write. Disk may be full.");
+    }
     return fout;
   }
 
